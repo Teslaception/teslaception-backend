@@ -1,10 +1,12 @@
 import { Router } from "express";
+import Container from "typedi";
 import basicAuth from "express-basic-auth";
+import config from "../config";
 import agendash from "agendash";
-import { Container } from "typedi";
-import config from "../../config";
 
-export default (app: Router) => {
+export default () => {
+  const app = Router();
+
   const agendaInstance = Container.get("agendaInstance");
 
   app.use(
@@ -17,4 +19,6 @@ export default (app: Router) => {
     }),
     agendash(agendaInstance)
   );
+
+  return app;
 };

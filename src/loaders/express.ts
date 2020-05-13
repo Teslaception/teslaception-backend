@@ -1,8 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import routes from "../api";
 import config from "../config";
+import { useExpressServer, NotFoundError } from "routing-controllers";
+import agendash from "./agendash";
+import * as path from "path";
+import Container from "typedi";
+import UserAuthenticationMiddleware from "../api/middlewares/isAuth";
+import CurrentUserMiddleware from "../api/middlewares/attachCurrentUser";
+
 export default ({ app }: { app: express.Application }) => {
   /**
    * Health Check endpoints
@@ -26,32 +32,50 @@ export default ({ app }: { app: express.Application }) => {
 
   // Middleware that transforms the raw string of req.body into json
   app.use(express.json());
+
+  const authenticationMiddleware = Container.get(UserAuthenticationMiddleware);
+  const currentUserMiddleware = Container.get(CurrentUserMiddleware);
   // Load API routes
-  app.use(config.api.prefix, routes());
+  useExpressServer(app, {
+    defaultErrorHandler: false, // replaced with error handler below.
+    development: false, // If true, removes stack for errors
+    routePrefix: config.api.prefix,
+    controllers: [path.join(__dirname, "../api/controllers/*.ts")],
+    authorizationChecker: authenticationMiddleware.userAuthentication.bind(
+      authenticationMiddleware
+    ),
+    currentUserChecker: currentUserMiddleware.getCurrentUser.bind(
+      currentUserMiddleware
+    ),
+  });
 
-  /// catch 404 and forward to error handler
+  // Load Agendash routes
+  app.use(config.api.prefix, agendash());
+
+  // catch 404 send appropriate error
   app.use((req, res, next) => {
-    const err = new Error("Not Found");
-    err["status"] = 404;
-    next(err);
+    if (!res.headersSent) {
+      const error = new NotFoundError();
+      res.status(404);
+      res.send({ errors: [new NotFoundError()] });
+    } else {
+      return next();
+    }
   });
 
-  /// error handlers
   app.use((err, req, res, next) => {
-    /**
-     * Handle 401 thrown by express-jwt library
-     */
-    if (err.name === "UnauthorizedError") {
-      return res.status(err.status).send({ message: err.message }).end();
-    }
-    return next(err);
-  });
-  app.use((err, req, res, next) => {
-    res.status(err.status || 500);
+    // Catch errors that haven't been sent yet (like celebrate for example)
+    // if (!res.headersSent) { // Add back if using the default handler
+    res.status(err.status || err.httpCode || 500);
     res.json({
-      errors: {
-        message: err.message,
-      },
+      errors: [
+        {
+          name: err.name,
+          message: err.message,
+        },
+      ],
     });
+    // }
+    // If the error has already been sent by a framework (routing-controllers for example) then it is intercepted here and not spit out to the console
   });
 };

@@ -1,5 +1,9 @@
-import jwt from "express-jwt";
+import { verify } from "jsonwebtoken";
 import config from "../../config";
+import { Service, Inject } from "typedi";
+import { Action } from "routing-controllers";
+import jwt from "express-jwt";
+import { NextFunction } from "express";
 
 /**
  * We are assuming that the JWT will come in a header with the form
@@ -26,10 +30,44 @@ const getTokenFromHeader = (req) => {
   return null;
 };
 
-const isAuth = jwt({
-  secret: config.jwtSecret, // The _secret_ to sign the JWTs
-  userProperty: "token", // Use req.token to store the JWT
-  getToken: getTokenFromHeader, // How to extract the JWT from the request
-});
+@Service()
+export default class UserAuthenticationMiddleware {
+  public async userAuthentication(
+    action: Action,
+    roles: string[]
+  ): Promise<boolean> {
+    // solution 1
 
-export default isAuth;
+    const requestHandler = jwt({
+      secret: config.jwtSecret,
+      userProperty: "token",
+      getToken: getTokenFromHeader,
+    });
+
+    return new Promise((resolve) => {
+      requestHandler(action.request, action.response, () => {
+        // action.next(); // If I call next, it doesn't work. I don't know why
+
+        resolve(!!action.request.token);
+      });
+    });
+
+    // // solution 2 // works
+    // const tokenSplit = action.request.headers["authorization"].split(" ");
+    // const token = tokenSplit.length === 2 ? tokenSplit[1] : null;
+
+    // return new Promise((resolve) => {
+    //   verify(token, config.jwtSecret, null, (error, decoded) => {
+    //     if (error) {
+    //       action.response.status(401).send({ message: error.message }).end();
+    //       resolve(false);
+    //     } else {
+    //       action.request.token = decoded; // don't need it in the previous solution as it's handled by requestHandler
+    //       // action.next(); // it seems not necessary
+
+    //       resolve(!!action.request.token);
+    //     }
+    //   });
+    // });
+  }
+}

@@ -17,9 +17,9 @@ async function startServer() {
    **/
   await require("./loaders").default({ expressApp: app });
 
-  app.listen(config.port, (err) => {
-    if (err) {
-      Logger.error(err);
+  app.listen(config.port, (error) => {
+    if (error) {
+      Logger.error(error);
       process.exit(1);
       return;
     }
