@@ -20,6 +20,8 @@ const User = new mongoose.Schema(
 
     salt: String,
 
+    teslaJwt: String,
+
     role: {
       type: String,
       default: "user",

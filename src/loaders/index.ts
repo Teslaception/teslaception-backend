@@ -8,6 +8,7 @@ import "./events";
 import modelsInjectorLoader from "./modelsInjector";
 import Container from "typedi";
 import { useContainer } from "routing-controllers";
+import httpClientLoader from "./httpClients";
 
 export default async ({ expressApp }) => {
   useContainer(Container);
@@ -28,6 +29,9 @@ export default async ({ expressApp }) => {
 
   await expressLoader({ app: expressApp });
   Logger.info("✌️ Express loaded");
+
+  await httpClientLoader();
+  Logger.info("✌️ HTTP Clients loaded");
 };
 
 // TODO: refactor that into modelsInjector

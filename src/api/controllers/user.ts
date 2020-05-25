@@ -14,7 +14,7 @@ import { UserDTO } from "../../models/userDTO";
 export class UsersController {
   @Authorized()
   @Get("/me")
-  get(@Res() response: Response, @CurrentUser() user?: IUser) {
+  get(@CurrentUser() user?: IUser) {
     return plainToClass(UserDTO, user, {
       strategy: "excludeAll",
       enableImplicitConversion: true,

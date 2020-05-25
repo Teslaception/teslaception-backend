@@ -1,20 +1,29 @@
-import fetch from "node-fetch";
-import { HttpError, NotFoundError, ForbiddenError } from "routing-controllers";
-import { Inject } from "typedi";
+import fetch, { Response as FetchResponse } from "node-fetch";
+import {
+  HttpError,
+  NotFoundError,
+  ForbiddenError,
+  UnauthorizedError,
+} from "routing-controllers";
+import Container, { Inject } from "typedi";
 
 export default class RestClient {
-  @Inject("logger") private logger: Loggers.Logger;
+  // @Inject("logger") private logger: Loggers.Logger;
+  private logger: Loggers.Logger;
 
   constructor(
     private baseURL: string,
     private defaultHeaders: { [key: string]: string }
-  ) {}
+  ) {
+    this.logger = Container.get("logger");
+  }
 
   public async get(
     requestPath: string,
     queryParams: { [key: string]: string } = {},
     requestHeaders: { [key: string]: string } = {} // HeadersInit
-  ) {
+  ): Promise<FetchResponse> {
+    this.logger.info("url: %s", this.getFullURL(requestPath, queryParams)); // doesn't work, I think I have the binding wrong somewhere // plus I have a 500 not well handled
     return fetch(this.getFullURL(requestPath, queryParams), {
       method: "GET",
       headers: { ...this.defaultHeaders, ...requestHeaders },
@@ -31,7 +40,7 @@ export default class RestClient {
     requestPath: string,
     requestBody: any,
     requestHeaders: { [key: string]: string }
-  ) {
+  ): Promise<FetchResponse> {
     return fetch(this.getFullURL(requestPath), {
       method: "PUT",
       body: requestBody,
@@ -49,25 +58,31 @@ export default class RestClient {
     requestPath: string,
     requestBody: any,
     requestHeaders: { [key: string]: string }
-  ) {
-    return fetch(this.getFullURL(requestPath), {
-      method: "POST",
-      body: requestBody,
-      headers: { ...this.defaultHeaders, ...requestHeaders },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .catch((error) => {
-        this.handleError(error);
+  ): Promise<FetchResponse> {
+    this.logger.debug(
+      "Calling post with url: %s and body: %o",
+      this.getFullURL(requestPath),
+      requestBody
+    );
+    try {
+      const response = await fetch(this.getFullURL(requestPath), {
+        method: "POST",
+        body: JSON.stringify(requestBody),
+        headers: { ...this.defaultHeaders, ...requestHeaders },
       });
+
+      this.logger.debug("Received: %o", response);
+      return response;
+    } catch (error) {
+      this.handleError(error);
+    }
   }
 
   public async delete(
     requestPath: string,
     requestBody: any,
     requestHeaders: { [key: string]: string }
-  ) {
+  ): Promise<FetchResponse> {
     return fetch(this.getFullURL(requestPath), {
       method: "DELETE",
       body: requestBody,
@@ -105,12 +120,16 @@ export default class RestClient {
 
     const status = response.status;
 
-    if (status === 404) {
-      throw new NotFoundError("Item does not exist.");
+    if (status === 401) {
+      throw new UnauthorizedError("Remote - Authorization required");
     }
 
     if (status === 403) {
-      throw new ForbiddenError("Item is not authorized.");
+      throw new ForbiddenError("Remote - Forbidden");
+    }
+
+    if (status === 404) {
+      throw new NotFoundError("Remote - Not found");
     }
 
     const moddedStatus = status % 500;

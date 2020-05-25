@@ -30,16 +30,17 @@ export class AuthController {
     })
   )
   async signup(@Req() request: Request, @Res() response: Response) {
+    // TODO: Need to use routing-controllers instead
     this.logger.debug(
       "Calling Loggers.LoggerSign-Up endpoint with body: %o",
       request.body
     );
     try {
-      const authServiceInstance = Container.get(AuthService);
+      const authServiceInstance = Container.get(AuthService); // I should inject the Auth Service
       const { user, token } = await authServiceInstance.SignUp(
         request.body as IUserInputDTO // maybe that wouldn't be necessary using class-transformer
       );
-      return response.status(201).json({ user, token });
+      return response.status(201).json({ user, token }); // TODO: Need to use routing-controllers instead
     } catch (error) {
       this.logger.error("🔥 error: %o", error);
       throw new BadRequestError(error.message);
@@ -56,12 +57,13 @@ export class AuthController {
     })
   )
   async signin(@Req() request: Request, @Res() response: Response) {
+    // TODO: Need to use routing-controllers instead
     this.logger.debug("Calling Sign-In endpoint with body: %o", request.body);
     try {
       const { email, password } = request.body;
       const authServiceInstance = Container.get(AuthService);
       const { user, token } = await authServiceInstance.SignIn(email, password);
-      return response.json({ user, token }).status(200);
+      return response.json({ user, token }).status(200); // TODO: Need to use routing-controllers instead
     } catch (error) {
       this.logger.error("🔥 error: %o", error);
       throw new BadRequestError(error.message);
@@ -80,10 +82,11 @@ export class AuthController {
   @Post("logout")
   @Authorized()
   logout(@Req() request: Request, @Res() response: Response) {
+    // TODO: Need to use routing-controllers instead
     this.logger.debug("Calling Sign-Out endpoint with body: %o", request.body);
     try {
       //@TODO AuthService.Logout(req.user) do some clever stuff
-      return response.status(200).end();
+      return response.status(200).end(); // TODO: Need to use routing-controllers instead
     } catch (error) {
       this.logger.error("🔥 error %o", error);
       throw new BadRequestError(error.message);

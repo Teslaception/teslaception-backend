@@ -7,8 +7,10 @@ export default class HttpClientFactory {
   ) {
     const defaultHeaders = {
       // necessary?
-      Authorization: "allow",
-      "Cache-Control": "max-age=0",
+      // Authorization: "allow",
+      // "Cache-Control": "max-age=0",
+      Accept: "application/json",
+      "Content-Type": "application/json",
     };
 
     if (apiSecrets && apiSecrets.length) {

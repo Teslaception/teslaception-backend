@@ -15,7 +15,7 @@ import events from "../subscribers/events";
 export default class AuthService {
   constructor(
     @Inject("userModel") private userModel: Models.UserModel,
-    private mailer: MailerService,
+    private mailer: MailerService, // Why is it not injected? You don't need to inject services?
     @Inject("logger") private logger: Loggers.Logger,
     @EventDispatcher() private eventDispatcher: EventDispatcherInterface
   ) {}
