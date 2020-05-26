@@ -1,13 +1,14 @@
-import config from "../config";
-import EmailSequenceJob from "../jobs/emailSequence";
-import Agenda from "agenda";
+import Agenda from 'agenda';
 
-export default ({ agenda }: { agenda: Agenda }) => {
+import config from '../config';
+import EmailSequenceJob from '../jobs/emailSequence';
+
+export default ({ agenda }: { agenda: Agenda }): void => {
   agenda.define(
-    "send-email",
-    { priority: "high", concurrency: config.agenda.concurrency },
+    'send-email',
+    { priority: 'high', concurrency: config.agenda.concurrency },
     // @TODO Could this be a static method? Would it be better?
-    new EmailSequenceJob().handler
+    new EmailSequenceJob().handler,
   );
 
   agenda.start();

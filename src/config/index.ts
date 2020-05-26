@@ -1,6 +1,6 @@
-import { config } from "dotenv";
+import { config } from 'dotenv';
 
-process.env.NODE_ENV = process.env.NODE_ENV || "development";
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 const envFound = config();
 if (!envFound) {
@@ -24,7 +24,7 @@ export default {
    * Used by winston logger
    */
   logs: {
-    level: process.env.LOG_LEVEL || "silly",
+    level: process.env.LOG_LEVEL || 'silly',
   },
 
   /**
@@ -47,13 +47,13 @@ export default {
    * API configs
    */
   api: {
-    prefix: "/api",
+    prefix: '/api',
   },
   /**
    * Mailgun email credentials
    */
   emails: {
     apiKey: process.env.SENDGRID_API_KEY,
-    domain: "Domain Name from mailgun",
+    domain: 'Domain Name from mailgun',
   },
 };

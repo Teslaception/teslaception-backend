@@ -1,6 +1,7 @@
-import { Document, Model } from "mongoose";
-import { IUser } from "../../interfaces/IUser";
-import { Logger as WLogger } from "winston";
+import { Document, Model } from 'mongoose';
+import { Logger as WLogger } from 'winston';
+
+import { IUser } from '../../interfaces/IUser';
 
 declare global {
   namespace Express {

@@ -1,10 +1,11 @@
-import { Service, Inject } from "typedi";
-import { IUser } from "../interfaces/IUser";
-import { MailService } from "@sendgrid/mail";
+import { MailService } from '@sendgrid/mail';
+import { Inject, Service } from 'typedi';
+
+import { IUser } from '../interfaces/IUser';
 
 @Service()
 export default class MailerService {
-  constructor(@Inject("emailClient") private emailClient: MailService) {}
+  constructor(@Inject('emailClient') private emailClient: MailService) {}
 
   public async SendWelcomeEmail(emailAddress) {
     /**
@@ -16,11 +17,11 @@ export default class MailerService {
     // https://github.com/sendgrid/sendgrid-nodejs
 
     const emailData = {
-      from: "corentin.leman.apps@gmail.com",
+      from: 'corentin.leman.apps@gmail.com',
       to: emailAddress,
-      subject: "Welcome to Teslaception!",
-      text: "Testing some Mailgun awesomness!",
-      html: "<strong>That Works!</strong>",
+      subject: 'Welcome to Teslaception!',
+      text: 'Testing some Mailgun awesomness!',
+      html: '<strong>That Works!</strong>',
     };
 
     (async () => {
@@ -34,12 +35,12 @@ export default class MailerService {
         }
       }
     })();
-    return { delivered: 1, status: "ok" };
+    return { delivered: 1, status: 'ok' };
   }
 
-  public StartEmailSequence(sequence: string, user: Partial<IUser>) {
+  public StartEmailSequence(_sequence: string, user: Partial<IUser>) {
     if (!user.email) {
-      throw new Error("No email provided");
+      throw new Error('No email provided');
     }
     // @TODO Add example of an email sequence implementation
     // Something like
@@ -48,6 +49,6 @@ export default class MailerService {
     // 3 - Schedule job for second email in 1-3 days or whatever
     // Every sequence can have its own behavior so maybe
     // the pattern Chain of Responsibility can help here.
-    return { delivered: 1, status: "ok" };
+    return { delivered: 1, status: 'ok' };
   }
 }

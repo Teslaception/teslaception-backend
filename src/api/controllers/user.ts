@@ -1,22 +1,16 @@
-import {
-  Get,
-  Authorized,
-  CurrentUser,
-  JsonController,
-  Res,
-} from "routing-controllers";
-import { IUser } from "../../interfaces/IUser";
-import { Response } from "express";
-import { plainToClass } from "class-transformer";
-import { UserDTO } from "../../models/userDTO";
+import { plainToClass } from 'class-transformer';
+import { Authorized, CurrentUser, Get, JsonController } from 'routing-controllers';
 
-@JsonController("/users")
+import { IUser } from '../../interfaces/IUser';
+import { UserDTO } from '../../models/userDTO';
+
+@JsonController('/users')
 export class UsersController {
   @Authorized()
-  @Get("/me")
+  @Get('/me')
   get(@CurrentUser() user?: IUser) {
     return plainToClass(UserDTO, user, {
-      strategy: "excludeAll",
+      strategy: 'excludeAll',
       enableImplicitConversion: true,
     });
   }

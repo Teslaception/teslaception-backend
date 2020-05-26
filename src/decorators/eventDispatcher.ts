@@ -3,8 +3,8 @@
  * Credits to the author
  */
 
-import { EventDispatcher as EventDispatcherClass } from "event-dispatch";
-import { Container } from "typedi";
+import { EventDispatcher as EventDispatcherClass } from 'event-dispatch';
+import { Container } from 'typedi';
 
 export function EventDispatcher() {
   return (object: any, propertyName: string, index?: number): void => {
@@ -18,4 +18,4 @@ export function EventDispatcher() {
   };
 }
 
-export { EventDispatcher as EventDispatcherInterface } from "event-dispatch";
+export { EventDispatcher as EventDispatcherInterface } from 'event-dispatch';

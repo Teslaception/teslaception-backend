@@ -1,5 +1,6 @@
-import { Container } from "typedi";
-import LoggerInstance from "./logger";
+import { Container } from 'typedi';
+
+import LoggerInstance from './logger';
 
 type TInjectedModel = {
   name: string;
@@ -12,9 +13,9 @@ export default (models: Array<TInjectedModel>) => {
       Container.set(model.name, model.model);
     });
 
-    LoggerInstance.info("✌️ Models injected into container");
+    LoggerInstance.info('✌️ Models injected into container');
   } catch (error) {
-    LoggerInstance.error("🔥 Error on models injector loader: %o", error);
+    LoggerInstance.error('🔥 Error on models injector loader: %o', error);
     throw error;
   }
 };

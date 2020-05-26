@@ -7,7 +7,8 @@
   "license": "AGPLv3",
   "scripts": {
     "start": "nodemon",
-    "inspect": "nodemon --inspect src/app.ts"
+    "inspect": "nodemon --inspect src/app.ts",
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --fix"
   },
   "dependencies": {
     "@sendgrid/mail": "7.1.0",
@@ -43,8 +44,28 @@
     "@types/node": "13.13.2",
     "@types/node-fetch": "2.5.7",
     "@types/reflect-metadata": "0.1.0",
+    "@typescript-eslint/eslint-plugin": "3.0.1",
+    "@typescript-eslint/parser": "3.0.1",
+    "eslint": "7.1.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-prettier": "3.1.3",
+    "eslint-plugin-simple-import-sort": "5.0.3",
+    "husky": "4.2.5",
+    "lint-staged": "10.2.6",
     "nodemon": "2.0.3",
+    "prettier": "2.0.5",
     "ts-node": "8.9.0",
     "typescript": "3.8.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts}": [
+      "eslint --fix"
+    ]
   }
 }

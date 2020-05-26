@@ -1,9 +1,9 @@
-import { Controller, Get } from "routing-controllers";
+import { Controller, Get } from 'routing-controllers';
 
-@Controller("/test")
+@Controller('/test')
 export class TestController {
-  @Get("/")
+  @Get('/')
   get() {
-    return "Yeah that works";
+    return 'Yeah that works';
   }
 }

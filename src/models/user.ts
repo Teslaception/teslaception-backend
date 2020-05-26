@@ -1,11 +1,12 @@
-import { IUser } from "../interfaces/IUser";
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+
+import { IUser } from '../interfaces/IUser';
 
 const User = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Please enter a full name"],
+      required: [true, 'Please enter a full name'],
       index: true,
     },
 
@@ -24,10 +25,10 @@ const User = new mongoose.Schema(
 
     role: {
       type: String,
-      default: "user",
+      default: 'user',
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model<IUser & mongoose.Document>("User", User);
+export default mongoose.model<IUser & mongoose.Document>('User', User);

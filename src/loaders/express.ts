@@ -1,29 +1,29 @@
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import config from "../config";
-import { useExpressServer, NotFoundError } from "routing-controllers";
-import agendash from "./agendash";
-import * as path from "path";
-import Container from "typedi";
-import UserAuthenticationMiddleware from "../api/middlewares/isAuth";
-import CurrentUserMiddleware from "../api/middlewares/attachCurrentUser";
+import cors from 'cors';
+import express from 'express';
+import * as path from 'path';
+import { NotFoundError, useExpressServer } from 'routing-controllers';
+import Container from 'typedi';
+
+import CurrentUserMiddleware from '../api/middlewares/attachCurrentUser';
+import UserAuthenticationMiddleware from '../api/middlewares/isAuth';
+import config from '../config';
+import agendash from './agendash';
 
 export default ({ app }: { app: express.Application }) => {
   /**
    * Health Check endpoints
    * @TODO Explain why they are here
    */
-  app.get("/status", (req, res) => {
+  app.get('/status', (_req, res) => {
     res.status(200).end();
   });
-  app.head("/status", (req, res) => {
+  app.head('/status', (_req, res) => {
     res.status(200).end();
   });
 
   // Useful if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
   // It shows the real origin IP in the heroku or Cloudwatch logs
-  app.enable("trust proxy");
+  app.enable('trust proxy');
 
   // The magic package that prevents frontend developers going nuts
   // Alternate description:
@@ -40,22 +40,17 @@ export default ({ app }: { app: express.Application }) => {
     defaultErrorHandler: false, // replaced with error handler below.
     development: false, // If true, removes stack for errors
     routePrefix: config.api.prefix,
-    controllers: [path.join(__dirname, "../api/controllers/*.ts")],
-    authorizationChecker: authenticationMiddleware.userAuthentication.bind(
-      authenticationMiddleware
-    ),
-    currentUserChecker: currentUserMiddleware.getCurrentUser.bind(
-      currentUserMiddleware
-    ),
+    controllers: [path.join(__dirname, '../api/controllers/*.ts')],
+    authorizationChecker: authenticationMiddleware.userAuthentication.bind(authenticationMiddleware),
+    currentUserChecker: currentUserMiddleware.getCurrentUser.bind(currentUserMiddleware),
   });
 
   // Load Agendash routes
   app.use(config.api.prefix, agendash());
 
   // catch 404 send appropriate error
-  app.use((req, res, next) => {
+  app.use((_req, res, next) => {
     if (!res.headersSent) {
-      const error = new NotFoundError();
       res.status(404);
       res.send({ errors: [new NotFoundError()] });
     } else {
@@ -63,7 +58,7 @@ export default ({ app }: { app: express.Application }) => {
     }
   });
 
-  app.use((err, req, res, next) => {
+  app.use((err, _req, res, _next) => {
     // Catch errors that haven't been sent yet (like celebrate for example)
     // if (!res.headersSent) { // Add back if using the default handler
     res.status(err.status || err.httpCode || 500);

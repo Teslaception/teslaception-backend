@@ -1,9 +1,8 @@
-import { verify } from "jsonwebtoken";
-import config from "../../config";
-import { Service, Inject } from "typedi";
-import { Action } from "routing-controllers";
-import jwt from "express-jwt";
-import { NextFunction } from "express";
+import jwt from 'express-jwt';
+import { Action } from 'routing-controllers';
+import { Service } from 'typedi';
+
+import config from '../../config';
 
 /**
  * We are assuming that the JWT will come in a header with the form
@@ -20,27 +19,22 @@ const getTokenFromHeader = (req) => {
    * So I believe that this should handle more 'edge' cases ;)
    */
   if (
-    (req.headers.authorization &&
-      req.headers.authorization.split(" ")[0] === "Token") ||
-    (req.headers.authorization &&
-      req.headers.authorization.split(" ")[0] === "Bearer")
+    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Token') ||
+    (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer')
   ) {
-    return req.headers.authorization.split(" ")[1];
+    return req.headers.authorization.split(' ')[1];
   }
   return null;
 };
 
 @Service()
 export default class UserAuthenticationMiddleware {
-  public async userAuthentication(
-    action: Action,
-    roles: string[]
-  ): Promise<boolean> {
+  public async userAuthentication(action: Action): Promise<boolean> {
     // solution 1
 
     const requestHandler = jwt({
       secret: config.jwtSecret,
-      userProperty: "token",
+      userProperty: 'token',
       getToken: getTokenFromHeader,
     });
 

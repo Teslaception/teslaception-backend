@@ -1,23 +1,24 @@
-import { Router } from "express";
-import Container from "typedi";
-import basicAuth from "express-basic-auth";
-import config from "../config";
-import agendash from "agendash";
+import agendash from 'agendash';
+import { Router } from 'express';
+import basicAuth from 'express-basic-auth';
+import Container from 'typedi';
+
+import config from '../config';
 
 export default () => {
   const app = Router();
 
-  const agendaInstance = Container.get("agendaInstance");
+  const agendaInstance = Container.get('agendaInstance');
 
   app.use(
-    "/dash",
+    '/dash',
     basicAuth({
       users: {
         [config.agendash.user]: config.agendash.password,
       },
       challenge: true,
     }),
-    agendash(agendaInstance)
+    agendash(agendaInstance),
   );
 
   return app;
