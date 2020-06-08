@@ -15,7 +15,7 @@ export default class RestClient {
     queryParams: { [key: string]: string } = {},
     requestHeaders: { [key: string]: string } = {}, // HeadersInit
   ): Promise<FetchResponse> {
-    this.logger.info('url: %s', this.getFullURL(requestPath, queryParams)); // doesn't work, I think I have the binding wrong somewhere // plus I have a 500 not well handled
+    this.logger.info('url: %s', this.getFullURL(requestPath, queryParams)); // I have a 500 not well handled
     return fetch(this.getFullURL(requestPath, queryParams), {
       method: 'GET',
       headers: { ...this.defaultHeaders, ...requestHeaders },
