@@ -51,9 +51,11 @@ const injectModels = async () => {
     model: require('../models/user').default,
   };
 
-  await modelsInjectorLoader([
-    userModel,
-    // salaryModel,
-    // whateverModel
-  ]);
+  const vehicleModel = {
+    name: 'vehicleModel',
+    // Notice the require syntax and the '.default'
+    model: require('../models/vehicle').default,
+  };
+
+  await modelsInjectorLoader([userModel, vehicleModel]);
 };

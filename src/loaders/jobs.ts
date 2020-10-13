@@ -1,9 +1,10 @@
 import Agenda from 'agenda';
 
 import config from '../config';
+import CarDataChecker from '../jobs/carDataChecker';
 import EmailSequenceJob from '../jobs/emailSequence';
 
-export default ({ agenda }: { agenda: Agenda }): void => {
+export default async ({ agenda }: { agenda: Agenda }): Promise<void> => {
   agenda.define(
     'send-email',
     { priority: 'high', concurrency: config.agenda.concurrency },
@@ -11,5 +12,13 @@ export default ({ agenda }: { agenda: Agenda }): void => {
     new EmailSequenceJob().handler,
   );
 
-  agenda.start();
+  agenda.define(
+    'pull-sleeping-info',
+    { priority: 'low', concurrency: config.agenda.concurrency },
+    CarDataChecker.pullSleepingCarsInfo,
+  );
+
+  await agenda.start();
+
+  await agenda.every('1 minute', 'pull-sleeping-info');
 };

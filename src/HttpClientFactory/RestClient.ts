@@ -16,16 +16,32 @@ export default class RestClient {
     requestHeaders: { [key: string]: string } = {}, // HeadersInit
   ): Promise<FetchResponse> {
     this.logger.info('url: %s', this.getFullURL(requestPath, queryParams)); // I have a 500 not well handled
-    return fetch(this.getFullURL(requestPath, queryParams), {
-      method: 'GET',
-      headers: { ...this.defaultHeaders, ...requestHeaders },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .catch((error) => {
-        this.handleError(error);
+
+    try {
+      const response = fetch(this.getFullURL(requestPath, queryParams), {
+        method: 'GET',
+        headers: { ...this.defaultHeaders, ...requestHeaders },
       });
+
+      // this.logger.info('RESPONSE: %o', response);
+      return response;
+    } catch (error) {
+      this.handleError(error);
+    }
+
+    // Why if we do that, it's scared about the return having void?
+    // return fetch(this.getFullURL(requestPath, queryParams), {
+    //   method: 'GET',
+    //   headers: { ...this.defaultHeaders, ...requestHeaders },
+    // })
+    //   .then((response) => {
+    //     // here the issue is that I'm receiving a 401, and it cannot parse it, so it fails, and it the catch block doesn't get the actual response, so it gets treated in 'if (!response)'
+    //     this.logger.info('RESPONSE: %o', response);
+    //     return response;
+    //   })
+    //   .catch((error) => {
+    //     this.handleError(error);
+    //   });
   }
 
   public async put(
@@ -96,7 +112,7 @@ export default class RestClient {
 
     const response = error.response;
     if (!response) {
-      this.logger.info('Received unexpected error from upstream service. ');
+      this.logger.info('Received unexpected error from upstream service.');
       for (const a in error) {
         this.logger.info('In payload: ' + a);
       }

@@ -5,7 +5,7 @@ import { Inject, Service } from 'typedi';
 
 import config from '../config';
 import { EventDispatcher, EventDispatcherInterface } from '../decorators/eventDispatcher';
-import { IUser, IUserInputDTO } from '../interfaces/IUser';
+import { IUser, TUserInputDTO } from '../interfaces/IUser';
 import events from '../subscribers/events';
 import MailerService from './mailer';
 
@@ -18,7 +18,7 @@ export default class AuthService {
     @EventDispatcher() private eventDispatcher: EventDispatcherInterface,
   ) {}
 
-  public async SignUp(userInputDTO: IUserInputDTO): Promise<{ user: IUser; token: string }> {
+  public async SignUp(userInputDTO: TUserInputDTO): Promise<{ user: IUser; token: string }> {
     try {
       const salt = randomBytes(32);
 

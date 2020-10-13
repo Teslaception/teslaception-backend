@@ -3,8 +3,8 @@ import { plainToClass } from 'class-transformer';
 import { Authorized, BadRequestError, Body, HttpCode, JsonController, Post, UseBefore } from 'routing-controllers';
 import { Container, Inject } from 'typedi';
 
-import { IUserInputDTO } from '../../interfaces/IUser';
-import { UserDTO } from '../../models/userDTO';
+import { TUserInputDTO } from '../../interfaces/IUser';
+import { UserResponse } from '../../models/responses/userResponse';
 import AuthService from '../../services/auth';
 
 @JsonController('/auth')
@@ -22,7 +22,7 @@ export class AuthController {
     }),
   )
   @HttpCode(201)
-  async signup(@Body() userDTO: IUserInputDTO) {
+  async signup(@Body() userDTO: TUserInputDTO) {
     this.logger.debug('Calling Loggers.LoggerSign-Up endpoint with userDTP: %o', userDTO);
     try {
       const authServiceInstance = Container.get(AuthService); // I should inject the Auth Service
@@ -31,7 +31,7 @@ export class AuthController {
       );
 
       return {
-        user: plainToClass(UserDTO, user, {
+        user: plainToClass(UserResponse, user, {
           strategy: 'excludeAll',
           enableImplicitConversion: true,
         }),
@@ -58,7 +58,7 @@ export class AuthController {
       const authServiceInstance = Container.get(AuthService);
       const { user, token } = await authServiceInstance.SignIn(email, password);
       return {
-        user: plainToClass(UserDTO, user, {
+        user: plainToClass(UserResponse, user, {
           strategy: 'excludeAll',
           enableImplicitConversion: true,
         }),

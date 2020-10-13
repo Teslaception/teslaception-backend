@@ -1,14 +1,14 @@
-export interface IUser {
-  _id: string;
+import { Document } from 'mongoose';
+
+import { IVehicle } from './IVehicle';
+
+export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
   salt: string;
   teslaJwt?: string;
+  vehicles: Array<IVehicle>;
 }
 
-export interface IUserInputDTO {
-  name: string;
-  email: string;
-  password: string;
-}
+export type TUserInputDTO = Pick<IUser, 'name' | 'email' | 'password'>;
